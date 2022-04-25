@@ -65,13 +65,19 @@ export class EthereumPickleDemoJarTokenFetcher implements PositionFetcher<AppTok
         // Initiates a smart contract instance pointing to jar token address
         const contract = this.pickleDemoContractFactory.pickleJar({ address: jarAddress, network });
 
-        // Request the symbol, decimals, supply, etc. for the jar token
+        // // Request the symbol, decimals, supply, etc. for the jar token
         const [symbol, decimals, supplyRaw, underlyingTokenAddressRaw, ratioRaw] = await Promise.all([
           multicall.wrap(contract).symbol(),
           multicall.wrap(contract).decimals(),
           multicall.wrap(contract).totalSupply(),
-          multicall.wrap(contract).token(),
-          multicall.wrap(contract).getRatio(),
+          multicall
+            .wrap(contract)
+            .token()
+            .catch(() => ''),
+          multicall
+            .wrap(contract)
+            .getRatio()
+            .catch(() => ''),
         ]);
 
         // Denormalize the supply
